@@ -1,0 +1,19 @@
+@use './variaveis.scss' as *;
+
+.coluna{
+    background-color: $cor-tarefa;
+    padding: 5px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: col;
+    gap: 10px;
+    flex: 1 1 320px;
+    width: 100vw;
+
+    .sub-titulo{
+        font-size: $fonte-subtitulo;
+        font-weight: bold;
+        color: $cor-destaque;
+        text-align: center;
+    }
+}

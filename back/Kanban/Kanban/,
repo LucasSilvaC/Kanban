@@ -1,0 +1,58 @@
+import 'dart:io';
+ 
+void main() {
+  double valorCompra = 0;
+ 
+  // Pergunta o valor até ser válido
+  while (true) {
+    print("Informe o valor da compra:");
+    String? entrada = stdin.readLineSync();
+ 
+    try {
+      valorCompra = double.parse(entrada!);
+ 
+      if (valorCompra > 0) {
+        break;
+      } else {
+        print("O valor deve ser maior que zero.");
+      }
+    } catch (e) {
+      print("Valor inválido, digite um número válido.");
+    }
+  }
+ 
+  // Pergunta a forma de pagamento
+  int opcao = 0;
+  while (true) {
+    print("\nEscolha a forma de pagamento:");
+    print("1 - Dinheiro");
+    print("2 - Cartão de Débito");
+    print("3 - Cartão de Crédito");
+    print("4 - Pix");
+ 
+    String? entrada = stdin.readLineSync();
+ 
+    try {
+      opcao = int.parse(entrada!);
+ 
+      if (opcao >= 1 && opcao <= 4) {
+        break;
+      } else {
+        print("Opção inválida, escolha entre 1 e 4.");
+      }
+    } catch (e) {
+      print("Digite apenas números entre 1 e 4.");
+    }
+  }
+ 
+  // Resultado final
+  if (opcao == 1) {
+    print("Compra de R\$${valorCompra.toStringAsFixed(2)} paga em Dinheiro.");
+  } else if (opcao == 2) {
+    print("Compra de R\$${valorCompra.toStringAsFixed(2)} paga com Cartão de Débito.");
+  } else if (opcao == 3) {
+    print("Compra de R\$${valorCompra.toStringAsFixed(2)} paga com Cartão de Crédito.");
+  } else {
+    print("Compra de R\$${valorCompra.toStringAsFixed(2)} paga via Pix.");
+  }
+}

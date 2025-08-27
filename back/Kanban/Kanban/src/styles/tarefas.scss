@@ -1,0 +1,19 @@
+@use './variaveis.scss' as *;
+
+
+.tarefa{
+    background-color: $background;
+    color: $cor-texto;
+    padding: 15x;
+    width: 300px;
+    
+
+    .sub-titulo{
+        font-size: $fonte-subtitulo;
+        color: $cor-destaque;
+    }
+
+    p{
+        margin-left: 10px;
+    }
+}
