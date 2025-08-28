@@ -1,22 +1,18 @@
-import './styles/index.css'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute from "../protected/protectedRoute";
+import '../../styles/index.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomeKanban from "../../pages/home/home"
+import TableViews from '../../pages/tableViews/TableViews';
 
-function Routes() {
+function AppRoutes() {
   return (
     <Router>
       <Routes>
         {/* Rotas públicas */}
-        <Route path="/" element={<Redefinir_senha />} />
-        <Route path="/register" element={<Redefinir_senha />} />
-
-        {/* Rotas protegidas */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/home" element={<Redefinir_senha />} />
-        </Route>
+        <Route path="/" element={<HomeKanban />} />
+        <Route path="/table-views" element={<TableViews/>} />
       </Routes>
     </Router>
   )
 }
 
-export default App
+export default AppRoutes
