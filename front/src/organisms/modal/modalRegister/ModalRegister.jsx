@@ -1,6 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  email: z.string().email("Email inválido"),
+});
 
 export default function ModalRegister({ onClose }) {
   const [name, setName] = useState("");
@@ -12,6 +18,14 @@ export default function ModalRegister({ onClose }) {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const validation = userSchema.safeParse({ name, email });
+
+    if (!validation.success) {
+      setError(validation.error.errors.map((err) => err.message).join(", "));
+      setLoading(false);
+      return;
+    }
 
     try {
       await axios.post("http://localhost:8000/api/usuarios/", {

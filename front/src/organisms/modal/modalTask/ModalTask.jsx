@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
+import { z } from "zod";
+
+const taskSchema = z.object({
+  userId: z.string().min(1, "Selecione o usuário"),
+  description: z.string().min(1, "Descrição é obrigatória"),
+  sectorName: z.string().min(1, "Setor é obrigatório"),
+  priority: z.string().refine((val) => ["LOW", "MED", "HIGH"].includes(val), {
+    message: "Selecione a prioridade",
+  }),
+  status: z.string().refine((val) => ["TODO", "DOING", "DONE"].includes(val), {
+    message: "Selecione o status",
+  }),
+});
 
 export default function ModalTask({ onClose, users = [], task = null, refreshTasks }) {
   const [userId, setUserId] = useState("");
@@ -10,6 +23,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
   const [status, setStatus] = useState("TODO");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     if (task) {
@@ -25,12 +39,15 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
     e.preventDefault();
     setLoading(true);
     setError("");
+    setErrors([]);
 
-    if (!userId || !description || !sectorName || !priority) {
-      setError("Preencha todos os campos obrigatórios.");
-      setLoading(false);
-      return;
-    }
+    const validation = taskSchema.safeParse({
+      userId,
+      description,
+      sectorName,
+      priority,
+      status,
+    });
 
     try {
       if (task) {
@@ -53,7 +70,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
         alert("Tarefa cadastrada com sucesso!");
       }
 
-      refreshTasks?.(); 
+      refreshTasks?.();
       onClose();
     } catch (err) {
       console.error(err);
@@ -132,7 +149,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
           >
             <option value="">Selecione a prioridade</option>
             <option value="LOW">Baixa</option>
-            <option value="MEDIUM">Média</option>
+            <option value="MED">Média</option>
             <option value="HIGH">Alta</option>
           </select>
 
@@ -167,6 +184,13 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
               {loading ? "Salvando..." : task ? "Atualizar" : "Cadastrar"}
             </button>
           </div>
+          {errors.length > 0 && (
+            <ul className="text-[#D85F5F] text-sm">
+              {errors.map((msg, idx) => (
+                <li key={idx}>{msg}</li>
+              ))}
+            </ul>
+          )}
         </form>
       </div>
     </div>
