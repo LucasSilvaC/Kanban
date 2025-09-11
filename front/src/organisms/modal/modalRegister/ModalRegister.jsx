@@ -1,62 +1,36 @@
-import { useState } from "react";
-import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
-import { z } from "zod";
+import { createPortal } from "react-dom";
+import useModalRegisterViewModel from "./viewmodels/useModalRegisterViewModel";
 
-const userSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  email: z.string().email("Email inválido"),
-});
+export default function ModalRegister({ refreshUsers, onClose }) {
+  const { modalRef, name, setName, email, setEmail, loading, error, handleSubmit } =
+    useModalRegisterViewModel({ refreshUsers, onClose });
 
-export default function ModalRegister({ onClose }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    const validation = userSchema.safeParse({ name, email });
-
-    if (!validation.success) {
-      setError(validation.error.errors.map((err) => err.message).join(", "));
-      setLoading(false);
-      return;
-    }
-
-    try {
-      await axios.post("http://localhost:8000/api/usuarios/", {
-        name,
-        email,
-      });
-      alert("Usuário cadastrado com sucesso!");
-      setName("");
-      setEmail("");
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        <AiOutlineClose
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 cursor-pointer"
-          size={24}
+  return createPortal(
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+      aria-modal="true"
+      role="dialog"
+      aria-label="Cadastro de Usuário"
+      style={{ touchAction: "none" }}
+    >
+      <div
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative"
+        role="document"
+        style={{ touchAction: "auto" }}
+      >
+        <button
+          type="button"
           onClick={onClose}
-        />
-
-        <h1
-          className="text-2xl font-bold mb-6"
-          style={{ color: "var(--color-plura-blue-50)" }}
+          aria-label="Fechar"
+          tabIndex={0}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#5f679f] rounded"
         >
+          <AiOutlineClose size={24} />
+        </button>
+
+        <h1 className="text-2xl font-bold mb-6" style={{ color: "var(--color-plura-blue-50)" }}>
           Cadastro de Usuário
         </h1>
 
@@ -68,6 +42,7 @@ export default function ModalRegister({ onClose }) {
             onChange={(e) => setName(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
             required
+            aria-label="Nome do usuário"
           />
           <input
             type="email"
@@ -76,6 +51,7 @@ export default function ModalRegister({ onClose }) {
             onChange={(e) => setEmail(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
             required
+            aria-label="Email do usuário"
           />
           {error && <span className="text-red-500 text-sm">{error}</span>}
           <button
@@ -87,6 +63,7 @@ export default function ModalRegister({ onClose }) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

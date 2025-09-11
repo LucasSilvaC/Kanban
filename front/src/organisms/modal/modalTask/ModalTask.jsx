@@ -1,112 +1,45 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { createPortal } from "react-dom";
 import { AiOutlineClose } from "react-icons/ai";
-import { z } from "zod";
-
-const taskSchema = z.object({
-  userId: z.string().min(1, "Selecione o usuário"),
-  description: z.string().min(1, "Descrição é obrigatória"),
-  sectorName: z.string().min(1, "Setor é obrigatório"),
-  priority: z.string().refine((val) => ["LOW", "MED", "HIGH"].includes(val), {
-    message: "Selecione a prioridade",
-  }),
-  status: z.string().refine((val) => ["TODO", "DOING", "DONE"].includes(val), {
-    message: "Selecione o status",
-  }),
-});
+import useModalTaskViewModel from "./viewmodels/useModalTaskViewModel";
 
 export default function ModalTask({ onClose, users = [], task = null, refreshTasks }) {
-  const [userId, setUserId] = useState("");
-  const [description, setDescription] = useState("");
-  const [sectorName, setSectorName] = useState("");
-  const [priority, setPriority] = useState("");
-  const [status, setStatus] = useState("TODO");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [errors, setErrors] = useState([]);
+  const {
+    modalRef,
+    userId, setUserId,
+    description, setDescription,
+    sectorName, setSectorName,
+    priority, setPriority,
+    status, setStatus,
+    loading,
+    error,
+    errors,
+    handleSubmit,
+    handleDelete,
+  } = useModalTaskViewModel({ task, users, refreshTasks, onClose });
 
-  useEffect(() => {
-    if (task) {
-      setUserId(task.user || "");
-      setDescription(task.description || "");
-      setSectorName(task.sector_name || "");
-      setPriority(task.priority || "");
-      setStatus(task.status || "TODO");
-    }
-  }, [task]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setErrors([]);
-
-    const validation = taskSchema.safeParse({
-      userId,
-      description,
-      sectorName,
-      priority,
-      status,
-    });
-
-    try {
-      if (task) {
-        await axios.patch(`http://localhost:8000/api/tasks/${task.id}/`, {
-          user: userId,
-          description,
-          sector_name: sectorName,
-          priority,
-          status,
-        });
-        alert("Tarefa atualizada com sucesso!");
-      } else {
-        await axios.post("http://localhost:8000/api/tasks/", {
-          user: userId,
-          description,
-          sector_name: sectorName,
-          priority,
-          status,
-        });
-        alert("Tarefa cadastrada com sucesso!");
-      }
-
-      refreshTasks?.();
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao salvar a tarefa.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!task) return;
-    const confirmDelete = window.confirm("Deseja realmente excluir esta tarefa?");
-    if (!confirmDelete) return;
-
-    try {
-      setLoading(true);
-      await axios.delete(`http://localhost:8000/api/tasks/${task.id}/`);
-      alert("Tarefa excluída com sucesso!");
-      refreshTasks?.();
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao excluir a tarefa.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        <AiOutlineClose
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 cursor-pointer"
-          size={24}
+  const modalContent = (
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black/50 z-[9999]"
+      aria-modal="true"
+      role="dialog"
+      aria-label={task ? "Editar Tarefa" : "Cadastro de Tarefa"}
+      style={{ touchAction: "none" }}
+    >
+      <div
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative"
+        role="document"
+        style={{ touchAction: "auto" }}
+      >
+        <button
+          type="button"
           onClick={onClose}
-        />
+          aria-label="Fechar"
+          tabIndex={0}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#5f679f] rounded"
+        >
+          <AiOutlineClose size={24} />
+        </button>
 
         <h1 className="text-2xl font-bold mb-6" style={{ color: "var(--color-plura-blue-50)" }}>
           {task ? "Editar Tarefa" : "Cadastro de Tarefa"}
@@ -117,6 +50,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            aria-label="Selecionar usuário"
           >
             <option value="">Selecione o usuário</option>
             {users.map((user) => (
@@ -132,6 +66,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            aria-label="Descrição da tarefa"
           />
 
           <input
@@ -140,12 +75,14 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             value={sectorName}
             onChange={(e) => setSectorName(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            aria-label="Setor"
           />
 
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            aria-label="Prioridade"
           >
             <option value="">Selecione a prioridade</option>
             <option value="LOW">Baixa</option>
@@ -157,6 +94,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            aria-label="Status"
           >
             <option value="TODO">A fazer</option>
             <option value="DOING">Fazendo</option>
@@ -184,8 +122,9 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
               {loading ? "Salvando..." : task ? "Atualizar" : "Cadastrar"}
             </button>
           </div>
+
           {errors.length > 0 && (
-            <ul className="text-[#D85F5F] text-sm">
+            <ul className="text-[#D85F5F] text-sm list-disc pl-5">
               {errors.map((msg, idx) => (
                 <li key={idx}>{msg}</li>
               ))}
@@ -195,4 +134,6 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
