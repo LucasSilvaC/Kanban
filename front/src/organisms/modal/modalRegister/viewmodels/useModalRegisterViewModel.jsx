@@ -44,16 +44,21 @@ export default function useModalRegisterViewModel({ refreshUsers, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(""); 
 
     const validation = userSchema.safeParse({ name, email });
 
     if (!validation.success) {
-      setError(
-        validation.error.issues
-          ? validation.error.issues.map(err => err.message).join(", ")
-          : "Dados inválidos"
-      );
+      const validationErrors = validation.error.issues.map((err) => {
+        if (err.path[0] === "name") {
+          return "Nome: " + err.message;
+        }
+        if (err.path[0] === "email") {
+          return "Email: " + err.message;
+        }
+        return err.message; 
+      }).join(", ");
+      setError(validationErrors);
       setLoading(false);
       return;
     }
@@ -67,12 +72,17 @@ export default function useModalRegisterViewModel({ refreshUsers, onClose }) {
       onClose();
     } catch (err) {
       console.error(err);
-      setError("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
+      if (err.response) {
+        setError("Erro ao cadastrar usuário: " + err.response.data.message || "Erro desconhecido.");
+      } else if (err.request) {
+        setError("Erro de rede: Não foi possível se conectar ao servidor.");
+      } else {
+        setError("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
   };
-
 
   return {
     modalRef,

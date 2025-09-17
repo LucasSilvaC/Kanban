@@ -35,18 +35,20 @@ export default function ModalRegister({ refreshUsers, onClose }) {
         </h1>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <label className="text-xl">Nome</label>
           <input
             type="text"
-            placeholder="Nome"
+            placeholder="Insira o seu nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
             required
             aria-label="Nome do usuário"
           />
+          <label className="text-xl">Email</label>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Insira o seu email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"

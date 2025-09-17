@@ -76,7 +76,7 @@ export default function useModalTaskViewModel({ task = null, users = [], refresh
       description,
       sectorName,
       priority,
-      status,
+      status: "TODO",
     });
 
     if (!validation.success) {
@@ -87,31 +87,32 @@ export default function useModalTaskViewModel({ task = null, users = [], refresh
     }
 
     try {
+      const taskData = {
+        user: userId,
+        description,
+        sector_name: sectorName,
+        priority,
+        status: "TODO",
+      };
+
       if (task) {
-        await axios.patch(`http://localhost:8000/api/tasks/${task.id}/`, {
-          user: userId,
-          description,
-          sector_name: sectorName,
-          priority,
-          status,
-        });
+        await axios.patch(`http://localhost:8000/api/tasks/${task.id}/`, taskData);
         alert("Tarefa atualizada com sucesso!");
       } else {
-        await axios.post("http://localhost:8000/api/tasks/", {
-          user: userId,
-          description,
-          sector_name: sectorName,
-          priority,
-          status,
-        });
+        await axios.post("http://localhost:8000/api/tasks/", taskData);
         alert("Tarefa cadastrada com sucesso!");
       }
 
       window.location.reload();
-
     } catch (err) {
       console.error(err);
-      setError("Erro ao salvar a tarefa.");
+      if (err.response) {
+        setError("Erro ao salvar a tarefa: " + (err.response.data.message || "Erro desconhecido."));
+      } else if (err.request) {
+        setError("Erro de rede: Não foi possível se conectar ao servidor.");
+      } else {
+        setError("Erro ao salvar a tarefa. Verifique os dados e tente novamente.");
+      }
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,6 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
     description, setDescription,
     sectorName, setSectorName,
     priority, setPriority,
-    status, setStatus,
     loading,
     error,
     errors,
@@ -46,6 +45,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
         </h1>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <label className="text-xl">Usuário</label>
           <select
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
@@ -60,6 +60,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             ))}
           </select>
 
+          <label className="text-xl">Descrição</label>
           <input
             type="text"
             placeholder="Descrição da tarefa"
@@ -69,15 +70,17 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             aria-label="Descrição da tarefa"
           />
 
+          <label className="text-xl">Setor</label>
           <input
             type="text"
-            placeholder="Setor"
+            placeholder="Digite o seu setor"
             value={sectorName}
             onChange={(e) => setSectorName(e.target.value)}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
             aria-label="Setor"
           />
 
+          <label className="text-xl">Prioridade</label>
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
@@ -90,18 +93,7 @@ export default function ModalTask({ onClose, users = [], task = null, refreshTas
             <option value="HIGH">Alta</option>
           </select>
 
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
-            aria-label="Status"
-          >
-            <option value="TODO">A fazer</option>
-            <option value="DOING">Fazendo</option>
-            <option value="DONE">Pronto</option>
-          </select>
-
-          {error && <span className="text-[#D85F5F] text-sm">{error}</span>}
+          {error && <span className="text-red-500 text-sm">{error}</span>}
 
           <div className="flex justify-between gap-2 mt-2">
             {task && (
