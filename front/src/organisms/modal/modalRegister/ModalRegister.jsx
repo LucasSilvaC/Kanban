@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import useModalRegisterViewModel from "./viewmodels/useModalRegisterViewModel";
 
 export default function ModalRegister({ refreshUsers, onClose }) {
-  const { modalRef, name, setName, email, setEmail, loading, error, handleSubmit } =
+  const { modalRef, name, setName, email, setEmail, loading, error, nameError, emailError, handleSubmit } =
     useModalRegisterViewModel({ refreshUsers, onClose });
 
   return createPortal(
@@ -41,20 +41,22 @@ export default function ModalRegister({ refreshUsers, onClose }) {
             placeholder="Insira o seu nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            className={`border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f] ${nameError ? 'border-red-500' : ''}`}
             required
             aria-label="Nome do usuário"
           />
+          {nameError && <span className="text-red-500 text-sm">{nameError}</span>}
           <label className="text-xl">Email</label>
           <input
             type="email"
             placeholder="Insira o seu email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f]"
+            className={`border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#5f679f] ${emailError ? 'border-red-500' : ''}`}
             required
             aria-label="Email do usuário"
           />
+          {emailError && <span className="text-red-500 text-sm">{emailError}</span>}
           {error && <span className="text-red-500 text-sm">{error}</span>}
           <button
             type="submit"

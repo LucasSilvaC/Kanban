@@ -1,3 +1,4 @@
+// import '@testing-library/jest-dom'
 import TaskCard from "../taskCard/TaskCard";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 
@@ -15,20 +16,15 @@ export default function Column({ id, title, icon: Icon, color, tasks = [], users
           aria-labelledby={columnTitleId}
           role="region"
           tabIndex={0}
-          aria-label={`Coluna ${title} com ${tasks?.length || 0} tarefas`}
+          aria-label={`Coluna ${title} com ${tasks?.filter(Boolean).length || 0} tarefas`}
         >
           <h2
             id={columnTitleId}
             className="text-xl font-semibold text-[#5f679f] mb-4 flex items-center gap-2"
           >
-            <Icon
-              aria-hidden="true"
-              focusable="false"
-              className="w-5 h-5"
-            />
+            {Icon && <Icon />}
             <span>{title}</span>
           </h2>
-
           <ul
             className="space-y-4 min-h-[50px]"
             role="list"
@@ -49,8 +45,9 @@ export default function Column({ id, title, icon: Icon, color, tasks = [], users
                       {...provided.dragHandleProps}
                       role="listitem"
                       tabIndex={0}
-                      className={`${snapshot.isDragging ? "bg-gray-100 shadow-lg" : ""} transition-all rounded`}
+                      className={`${snapshot.isDragging ? "bg-gray-100 shadow-lg" : ""} transition-all rounded cursor-pointer`}
                       aria-label={`Tarefa: ${task.description}`}
+                      onClick={() => onEditTask && onEditTask(task)}
                     >
                       <TaskCard
                         task={task}

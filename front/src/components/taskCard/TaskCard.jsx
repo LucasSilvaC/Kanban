@@ -13,7 +13,7 @@ const PRIORITY_LABEL_MAP = {
   HIGH: "Alta prioridade",
 };
 
-export default function TaskCard({ task, color, users, refreshTasks }) {
+export default function TaskCard({ task, color, users, refreshTasks, onEdit }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
@@ -25,6 +25,9 @@ export default function TaskCard({ task, color, users, refreshTasks }) {
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedTask(null);
+    if (refreshTasks) {
+      refreshTasks();
+    }
   };
 
   const getPriorityColor = (priority) => {
@@ -35,20 +38,24 @@ export default function TaskCard({ task, color, users, refreshTasks }) {
     return PRIORITY_LABEL_MAP[priority] || "Prioridade indefinida";
   };
 
+  if (!task) {
+    return null;
+  }
+
   return (
     <>
       <article
+        className={`p-5 bg-white border-l-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between ${color || ''}`}
+        role="group"
         tabIndex={0}
         aria-labelledby={`task-title-${task.id}`}
-        role="group"
-        className={`p-5 bg-white border-l-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between ${color}`}
         aria-label={`Cartão de tarefa: ${task.description}`}
       >
         <p
           id={`task-title-${task.id}`}
           className="text-gray-800 font-semibold text-lg mb-3 line-clamp-2"
         >
-          {task.description}
+          {task.description || ''}
         </p>
 
         <div className="flex justify-between items-center mt-4">
@@ -61,9 +68,9 @@ export default function TaskCard({ task, color, users, refreshTasks }) {
 
             <span
               className="text-sm text-gray-500"
-              aria-label={`Setor: ${task.sector_name}`}
+              aria-label={`Setor: ${task.sector_name || ''}`}
             >
-              {task.sector_name}
+              {task.sector_name || ''}
             </span>
           </div>
 
@@ -71,7 +78,11 @@ export default function TaskCard({ task, color, users, refreshTasks }) {
             type="button"
             aria-label={`Editar tarefa: ${task.description}`}
             className="text-sm text-[#5f679f] hover:text-[#4a5585] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#5f679f] rounded px-2 py-1"
-            onClick={() => handleOpenModal(task)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onEdit && onEdit(task)
+              handleOpenModal(task)
+            }}
           >
             Editar
           </button>

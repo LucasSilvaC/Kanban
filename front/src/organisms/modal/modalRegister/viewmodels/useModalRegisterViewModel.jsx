@@ -9,8 +9,7 @@ const userSchema = z.object({
     .regex(/^[a-zA-ZÀ-ÿ\s']+$/, "Nome deve conter apenas letras e espaços"),
   email: z
     .string()
-    .email("Email inválido")
-    .regex(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/, "Formato de email inválido"),
+    .email("Email inválido"),
 });
 
 export default function useModalRegisterViewModel({ refreshUsers, onClose }) {
@@ -18,6 +17,8 @@ export default function useModalRegisterViewModel({ refreshUsers, onClose }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -41,33 +42,63 @@ export default function useModalRegisterViewModel({ refreshUsers, onClose }) {
     };
   }, []);
 
+  const validateField = (field, value) => {
+    const trimmedValue = value.trim();
+    
+    if (field === 'name') {
+      if (trimmedValue.length < 2) {
+        setNameError("Nome deve ter pelo menos 2 caracteres");
+        return false;
+      }
+      if (!/^[a-zA-ZÀ-ÿ\s']+$/.test(trimmedValue)) {
+        setNameError("Nome deve conter apenas letras e espaços");
+        return false;
+      }
+      setNameError("");
+      return true;
+    }
+    
+    if (field === 'email') {
+      if (!trimmedValue) {
+        setEmailError("Email inválido");
+        return false;
+      }
+      if (!z.string().email().safeParse(trimmedValue).success) {
+        setEmailError("Email inválido");
+        return false;
+      }
+      setEmailError("");
+      return true;
+    }
+    
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(""); 
+    setError("");
 
-    const validation = userSchema.safeParse({ name, email });
+    // Validate all fields
+    const isNameValid = validateField('name', name);
+    const isEmailValid = validateField('email', email);
 
-    if (!validation.success) {
-      const validationErrors = validation.error.issues.map((err) => {
-        if (err.path[0] === "name") {
-          return "Nome: " + err.message;
-        }
-        if (err.path[0] === "email") {
-          return "Email: " + err.message;
-        }
-        return err.message; 
-      }).join(", ");
-      setError(validationErrors);
+    if (!isNameValid || !isEmailValid) {
       setLoading(false);
       return;
     }
 
     try {
-      await axios.post("http://localhost:8000/api/usuarios/", { name, email });
+      // Use trimmed values for API call
+      const trimmedName = name.trim();
+      const trimmedEmail = email.trim();
+      
+      await axios.post("http://localhost:8000/api/usuarios/", { name: trimmedName, email: trimmedEmail });
       alert("Usuário cadastrado com sucesso!");
       setName("");
       setEmail("");
+      setNameError("");
+      setEmailError("");
       refreshUsers?.();
       onClose();
     } catch (err) {
@@ -90,6 +121,8 @@ export default function useModalRegisterViewModel({ refreshUsers, onClose }) {
     email, setEmail,
     loading,
     error,
+    nameError,
+    emailError,
     handleSubmit,
   };
 }

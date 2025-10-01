@@ -103,7 +103,18 @@ export default function useModalTaskViewModel({ task = null, users = [], refresh
         alert("Tarefa cadastrada com sucesso!");
       }
 
-      window.location.reload();
+      if (task) {
+        await axios.patch(`http://localhost:8000/api/tasks/${task.id}/`, taskData);
+        alert("Tarefa atualizada com sucesso!");
+      } else {
+        await axios.post("http://localhost:8000/api/tasks/", taskData);
+        alert("Tarefa cadastrada com sucesso!");
+      }
+
+      if (refreshTasks) {
+        refreshTasks();
+      }
+      onClose();
     } catch (err) {
       console.error(err);
       if (err.response) {
@@ -127,7 +138,10 @@ export default function useModalTaskViewModel({ task = null, users = [], refresh
       setLoading(true);
       await axios.delete(`http://localhost:8000/api/tasks/${task.id}/`);
       alert("Tarefa excluída com sucesso!");
-      window.location.reload();
+      if (refreshTasks) {
+        refreshTasks();
+      }
+      onClose();
     } catch (err) {
       console.error(err);
       setError("Erro ao excluir a tarefa.");
