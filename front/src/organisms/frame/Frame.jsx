@@ -6,6 +6,12 @@ import { PiGearBold } from "react-icons/pi";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import useFrameViewModel from "./viewModel/UseFrameViewModel";
 
+const COLUMNS = [
+  { id: "todo", title: "A Fazer", icon: IoDocumentTextOutline, color: "border-red-400" },
+  { id: "doing", title: "Fazendo", icon: PiGearBold, color: "border-yellow-400" },
+  { id: "done", title: "Pronto", icon: IoCheckmarkDoneSharp, color: "border-green-400" },
+];
+
 export default function Frame() {
   const {
     tasks,
@@ -17,12 +23,6 @@ export default function Frame() {
     handleEditTask,
     handleCloseModal,
   } = useFrameViewModel();
-
-  const columns = [
-    { id: "todo", title: "A Fazer", icon: IoDocumentTextOutline, color: "border-red-400" },
-    { id: "doing", title: "Fazendo", icon: PiGearBold, color: "border-yellow-400" },
-    { id: "done", title: "Pronto", icon: IoCheckmarkDoneSharp, color: "border-green-400" },
-  ];
 
   return (
     <>
@@ -36,15 +36,21 @@ export default function Frame() {
             role="main"
             aria-label="Quadro Kanban de tarefas"
             tabIndex={0}
+            aria-describedby="kanban-description"
           >
-            {columns.map((col) => (
+            <div id="kanban-description" className="sr-only">
+              Quadro Kanban com três colunas: A Fazer, Fazendo e Pronto.
+              Você pode arrastar as tarefas entre as colunas para atualizar o status.
+            </div>
+            
+            {COLUMNS.map((column) => (
               <Column
-                key={col.id}
-                id={col.id}
-                title={col.title}
-                icon={col.icon}
-                color={col.color}
-                tasks={tasks[col.id] || []}
+                key={column.id}
+                id={column.id}
+                title={column.title}
+                icon={column.icon}
+                color={column.color}
+                tasks={tasks[column.id] || []}
                 users={users}
                 onEditTask={handleEditTask}
                 modalOpen={modalOpen}

@@ -2,22 +2,31 @@ import TaskCard from "../taskCard/TaskCard";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function Column({ id, title, icon: Icon, color, tasks = [], users = [], onEditTask, modalOpen }) {
+  const columnId = String(id);
+  const columnTitleId = `column-title-${columnId}`;
+
   return (
-    <Droppable droppableId={String(id)} isDropDisabled={modalOpen}>
+    <Droppable droppableId={columnId} isDropDisabled={modalOpen}>
       {(provided) => (
         <section
           ref={provided.innerRef}
           {...provided.droppableProps}
           className="bg-white shadow p-4 rounded-lg"
-          aria-labelledby={`column-title-${id}`}
+          aria-labelledby={columnTitleId}
           role="region"
           tabIndex={0}
+          aria-label={`Coluna ${title} com ${tasks?.length || 0} tarefas`}
         >
           <h2
-            id={`column-title-${id}`}
+            id={columnTitleId}
             className="text-xl font-semibold text-[#5f679f] mb-4 flex items-center gap-2"
           >
-            <Icon aria-hidden="true" focusable="false" /> {title}
+            <Icon
+              aria-hidden="true"
+              focusable="false"
+              className="w-5 h-5"
+            />
+            <span>{title}</span>
           </h2>
 
           <ul
@@ -41,6 +50,7 @@ export default function Column({ id, title, icon: Icon, color, tasks = [], users
                       role="listitem"
                       tabIndex={0}
                       className={`${snapshot.isDragging ? "bg-gray-100 shadow-lg" : ""} transition-all rounded`}
+                      aria-label={`Tarefa: ${task.description}`}
                     >
                       <TaskCard
                         task={task}
