@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { AiOutlineClose } from "react-icons/ai";
-import useModalTaskViewModel from "./viewmodels/useModalTaskViewModel";
+import useModalTaskViewModel from "./view-model/useModalTaskViewModel";
 
 export default function ModalTask({ onClose, users = [], task = null, refreshTasks }) {
   const {

@@ -30,36 +30,34 @@ export default function Column({ id, title, icon: Icon, color, tasks = [], users
             role="list"
             aria-label={`Lista de tarefas em ${title}`}
           >
-            {tasks?.map((task, index) =>
-              task ? (
-                <Draggable
-                  key={task.id}
-                  draggableId={String(task.id)}
-                  index={index}
-                  isDragDisabled={modalOpen}
-                >
-                  {(provided, snapshot) => (
-                    <li
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      role="listitem"
-                      tabIndex={0}
-                      className={`${snapshot.isDragging ? "bg-gray-100 shadow-lg" : ""} transition-all rounded cursor-pointer`}
-                      aria-label={`Tarefa: ${task.description}`}
-                      onClick={() => onEditTask && onEditTask(task)}
-                    >
-                      <TaskCard
-                        task={task}
-                        color={color}
-                        users={users}
-                        onEdit={() => onEditTask && onEditTask(task)}
-                      />
-                    </li>
-                  )}
-                </Draggable>
-              ) : null
-            )}
+            {tasks?.filter(Boolean).map((task, index) => (
+              <Draggable
+                key={task.id ?? index}
+                draggableId={String(task.id ?? index)}
+                index={index}
+                isDragDisabled={modalOpen}
+              >
+                {(provided, snapshot) => (
+                  <li
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    role="listitem"
+                    tabIndex={0}
+                    className={`${snapshot.isDragging ? "bg-gray-100 shadow-lg" : ""} transition-all rounded cursor-pointer`}
+                    aria-label={`Tarefa: ${task.description}`}
+                    onClick={() => onEditTask && onEditTask(task)}
+                  >
+                    <TaskCard
+                      task={task}
+                      color={color}
+                      users={users}
+                      onEdit={() => onEditTask && onEditTask(task)}
+                    />
+                  </li>
+                )}
+              </Draggable>
+            ))}
             {provided.placeholder}
           </ul>
         </section>

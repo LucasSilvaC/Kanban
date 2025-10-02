@@ -1,6 +1,6 @@
 import { AiOutlineEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
 import ModalTask from "../modal/modalTask/ModalTask";
-import useTableManagerViewModel from "./viewModel/useTableManagerViewModel";
+import useTableManagerViewModel from "./view-model/useTableManagerViewModel";
 
 const TABLE_HEADERS = {
   users: ["Ações", "ID", "Nome", "E-mail"],
