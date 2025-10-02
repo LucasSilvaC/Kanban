@@ -4,7 +4,7 @@ import ModalTask from "../modal/modalTask/ModalTask";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { PiGearBold } from "react-icons/pi";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
-import useFrameViewModel from "./viewModel/UseFrameViewModel";
+import useFrameViewModel from "./view-model/UseFrameViewModel";
 
 const COLUMNS = [
   { id: "todo", title: "A Fazer", icon: IoDocumentTextOutline, color: "border-red-400" },

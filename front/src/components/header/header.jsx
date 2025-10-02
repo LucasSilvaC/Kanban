@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import ModalRegister from "../../organisms/modal/modalRegister/ModalRegister";
 import ModalTask from "../../organisms/modal/modalTask/ModalTask";
-import HeaderViewModel from "./viewModel/UseHeaderViewModel";
+import HeaderViewModel from "./view-model/UseHeaderViewModel";
 
 export default function Header() {
   const {

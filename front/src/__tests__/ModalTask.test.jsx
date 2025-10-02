@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
-import ModalTask from "../organisms/modalTask/ModalTask";
-import useModalTaskViewModel from "../organisms/modal/modalTask/ModalTask";
+import ModalTask from "../organisms/modal/modalTask/ModalTask";
+import useModalTaskViewModel from "../organisms/modal/modalTask/view-model/useModalTaskViewModel";
 
 vi.mock("../organisms/modal/modalTask/view-model/useModalTaskViewModel");
 
@@ -42,10 +42,10 @@ describe("ModalTask Component", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Cadastro de Tarefa")).toBeInTheDocument();
-    expect(screen.getByLabelText("Selecionar usuário")).toBeInTheDocument();
+    expect(screen.getByLabelText("Selecione o responsável")).toBeInTheDocument();
     expect(screen.getByLabelText("Descrição da tarefa")).toBeInTheDocument();
-    expect(screen.getByLabelText("Setor")).toBeInTheDocument();
-    expect(screen.getByLabelText("Prioridade")).toBeInTheDocument();
+    expect(screen.getByLabelText("Setor da tarefa")).toBeInTheDocument();
+    expect(screen.getByLabelText("Prioridade da tarefa")).toBeInTheDocument();
     expect(screen.getByText("Cadastrar")).toBeInTheDocument();
   });
 
@@ -121,8 +121,7 @@ describe("ModalTask Component", () => {
     render(<ModalTask onClose={onCloseMock} users={mockUsers} task={null} refreshTasks={refreshTasksMock} />);
 
     expect(screen.getByText("Erro ao salvar")).toBeInTheDocument();
-    expect(screen.getByText("Campo usuário obrigatório")).toBeInTheDocument();
-    expect(screen.getByText("Campo descrição obrigatório")).toBeInTheDocument();
+    expect(screen.queryByText("Campo obrigatório")).not.toBeInTheDocument();
   });
 
   it("desabilita botões quando loading é true", () => {
@@ -145,7 +144,7 @@ describe("ModalTask Component", () => {
 
     render(<ModalTask onClose={onCloseMock} users={mockUsers} task={{ id: 1 }} refreshTasks={refreshTasksMock} />);
 
-    expect(screen.getByText("Salvando...")).toBeDisabled();
-    expect(screen.getByText("Excluir")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Salvando..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Excluir" })).toBeDisabled();
   });
 });

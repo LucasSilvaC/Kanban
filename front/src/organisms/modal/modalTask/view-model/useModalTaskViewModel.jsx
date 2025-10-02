@@ -76,7 +76,7 @@ export default function useModalTaskViewModel({ task = null, users = [], refresh
       description,
       sectorName,
       priority,
-      status: "TODO",
+      status: task ? task.status : "TODO",
     });
 
     if (!validation.success) {
@@ -92,7 +92,7 @@ export default function useModalTaskViewModel({ task = null, users = [], refresh
         description,
         sector_name: sectorName,
         priority,
-        status: "TODO",
+        status: task ? task.status : "TODO",
       };
 
       if (task) {
